@@ -2,21 +2,28 @@ import {
   update as updateSnake,
   draw as drawSnake,
   SNAKE_SPEED,
+  getSnakeHead,
+  snakeIntersection,
 } from "./snakey.js";
-//don't forger to export aswell from the file you are importing from.
-// const SNAKE_SPEED = 1 ;
 import { update as updateFood, draw as drawFood } from "./food.js";
+import { outsideGrid } from "./grid.js";
+
 let lastRenderTime = 0;
+let gameOver = false;
 const gameBoard = document.getElementById("game-board");
+
 function main(currentTime) {
-  window.requestAnimationFrame(main);
-  const sslr = (currentTime - lastRenderTime) / 1000;
-  if (sslr < 1 / SNAKE_SPEED) {
+  if (gameOver) {
+    if (confirm("You lost. Press ok to restart.")) {
+      window.location = "/";
+    }
     return;
-    console.log("If seconds last rendered");
-  } else {
-    console.log("hey there");
   }
+
+  window.requestAnimationFrame(main);
+  const secondsSinceLastRender = (currentTime - lastRenderTime) / 1000;
+  if (secondsSinceLastRender < 1 / SNAKE_SPEED) return;
+
   lastRenderTime = currentTime;
 
   update();
@@ -27,10 +34,16 @@ window.requestAnimationFrame(main);
 
 function update() {
   updateSnake();
+  updateFood();
+  checkDeath();
 }
+
 function draw() {
   gameBoard.innerHTML = "";
   drawSnake(gameBoard);
   drawFood(gameBoard);
-  updateFood(gameBoard);
+}
+
+function checkDeath() {
+  gameOver = outsideGrid(getSnakeHead()) || snakeIntersection();
 }

@@ -1,19 +1,16 @@
 import { onSnake, expandSnake } from "./snakey.js";
-let food = { x: 5, y: 0 };
-const EXPANSION_RATE = 1;
+import { randomGridPosition } from "./grid.js";
 
-const snakeBody = [
-  { x: 11, y: 11 },
-  { x: 12, y: 11 },
-  { x: 13, y: 11 },
-];
+let food = getRandomFoodPosition();
+const EXPANSION_RATE = 5;
 
 export function update() {
   if (onSnake(food)) {
     expandSnake(EXPANSION_RATE);
-    food = { x: 20, y: 14 };
+    food = getRandomFoodPosition();
   }
 }
+
 export function draw(gameBoard) {
   const foodElement = document.createElement("div");
   foodElement.style.gridRowStart = food.y;
@@ -22,3 +19,10 @@ export function draw(gameBoard) {
   gameBoard.appendChild(foodElement);
 }
 
+function getRandomFoodPosition() {
+  let newFoodPosition;
+  while (newFoodPosition == null || onSnake(newFoodPosition)) {
+    newFoodPosition = randomGridPosition();
+  }
+  return newFoodPosition;
+}
